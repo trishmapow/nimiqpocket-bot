@@ -52,8 +52,12 @@ def main():
                     break
 
                 json = req.json()
-                servers[server]["hr"] = json["hashRate"]
-                sum_hr += int(json["hashRate"])
+                hr = int(json["hashRate"])
+                if (hr < 1e6):
+                    servers[server]["hr"] = round(hr/1e3,2)+"kH/s"
+                else:
+                    servers[server]["hr"] = round(hr/1e6,2)+"MH/s"
+                sum_hr += hr
                 servers[server]["clients"] = json["numClients"]
                 sum_clients += int(json["numClients"])
 
@@ -61,7 +65,6 @@ def main():
                     num_blocks_cur = json["minedBlocks"]
                     pool_fee = json["poolFee"]
 
-            print(channel)
             if num_blocks_cur != num_blocks:
                 num_blocks = num_blocks_cur
                 if channel is not None:
@@ -72,8 +75,9 @@ def main():
             for server in servers:
                 arr.append([server, servers[server]["hr"], servers[server]["clients"]])
 
-            print(servers)
-            arr.append(["TOTAL", str(round(float(sum_hr)/1e6, 2))+"MH/s", sum_clients])
+            sum_hr_ft = str(round(float(sum_hr)/1e6, 2))+"MH/s"
+
+            arr.append(["TOTAL", sum_hr_ft, sum_clients])
             arr.append(["","",""])
             arr.append(["","Fee "+str(pool_fee)+"%","Blocks: "+str(num_blocks_cur)])
             pool_msg = tabulate(arr, headers=["Server", "Hashrate", "# miners"])
