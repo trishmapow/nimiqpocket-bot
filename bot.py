@@ -54,9 +54,9 @@ def main():
                 json = req.json()
                 hr = int(json["hashRate"])
                 if (hr < 1e6):
-                    servers[server]["hr"] = round(hr/1e3,2)+"kH/s"
+                    servers[server]["hr"] = str(round(hr/1e3,2))+"kH/s"
                 else:
-                    servers[server]["hr"] = round(hr/1e6,2)+"MH/s"
+                    servers[server]["hr"] = str(round(hr/1e6,2))+"MH/s"
                 sum_hr += hr
                 servers[server]["clients"] = json["numClients"]
                 sum_clients += int(json["numClients"])
