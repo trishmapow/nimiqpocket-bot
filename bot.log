@@ -1,0 +1,14 @@
+2018-08-06 10:42:37,162 -- WARNING -- PyNaCl is not installed, voice will NOT be supported
+2018-08-06 10:42:37,163 -- INFO -- on_ready has successfully been registered as an event
+2018-08-06 10:42:37,163 -- INFO -- on_message has successfully been registered as an event
+2018-08-06 10:42:37,980 -- ERROR -- Task exception was never retrieved
+future: <Task finished coro=<main.<locals>.background_update() done, defined at bot.py:39> exception=TypeError("'str' object does not support item assignment",)>
+Traceback (most recent call last):
+  File "bot.py", line 50, in background_update
+    server["hr"] = json["hashRate"]
+TypeError: 'str' object does not support item assignment
+2018-08-06 10:42:37,981 -- INFO -- logging in using static token
+2018-08-06 10:42:38,797 -- INFO -- Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6
+2018-08-06 10:42:38,799 -- INFO -- sent the identify payload to create the websocket
+2018-08-06 10:43:30,821 -- INFO -- on_ready has successfully been registered as an event
+2018-08-06 10:43:30,821 -- INFO -- on_message has successfully been registered as an event
