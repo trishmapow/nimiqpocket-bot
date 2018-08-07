@@ -49,6 +49,7 @@ def main():
                     req = requests.get("https://{}.nimiqpocket.com:8444/api/poolstats".format(server), timeout=5)
                 except (requests.Timeout, requests.exceptions.ConnectionError):
                     print("Couldn't connect to {}".format(server))
+                    await asyncio.sleep(15)
                     break
 
                 json = req.json()
