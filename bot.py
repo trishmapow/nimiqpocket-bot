@@ -47,7 +47,7 @@ def main():
             for server in servers:
                 try:
                     req = requests.get("https://{}.nimiqpocket.com:8444/api/poolstats".format(server), timeout=5)
-                except requests.Timeout:
+                except (requests.Timeout, requests.exceptions.ConnectionError):
                     print("Couldn't connect to {}".format(server))
                     break
 
@@ -82,7 +82,7 @@ def main():
             arr.append(["","Fee "+str(pool_fee)+"%","Blocks: "+str(num_blocks_cur)])
             pool_msg = tabulate(arr, headers=["Server", "Hashrate", "# miners"])
 
-            await asyncio.sleep(30)
+            await asyncio.sleep(60)
 
     client.loop.create_task(background_update())
     client.run(BOT_TOKEN)
