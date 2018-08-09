@@ -66,7 +66,7 @@ def main():
                     num_blocks_cur = json["minedBlocks"]
                     pool_fee = json["poolFee"]
 
-            if num_blocks_cur != num_blocks:
+            if num_blocks_cur > num_blocks:
                 num_blocks = num_blocks_cur
                 if channel is not None:
                     msg = "`We found Nimiqpocket's #{} block!` :tada:".format(num_blocks_cur)
