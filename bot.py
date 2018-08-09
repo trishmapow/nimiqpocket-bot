@@ -8,7 +8,7 @@ from time import sleep, time
 from tabulate import tabulate
 from bs4 import BeautifulSoup
 
-servers = {"hk": {},"eu": {},"pool": {}}
+servers = {"hk": {},"eu": {},"us": {}}
 num_blocks = -1
 pool_fee = -1
 channel = None
