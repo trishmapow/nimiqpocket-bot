@@ -4,7 +4,8 @@ import asyncio
 import configparser
 import os
 
-from time import sleep, time
+from time import sleep, time, strftime
+from datetime import datetime
 from tabulate import tabulate
 from bs4 import BeautifulSoup
 
@@ -69,7 +70,18 @@ def main():
             if num_blocks_cur > num_blocks:
                 num_blocks = num_blocks_cur
                 if channel is not None:
-                    msg = "`We found Nimiqpocket's #{} block!` :tada:".format(num_blocks_cur)
+                    msg = "`We found Nimiqpocket's #{} block! ".format(num_blocks_cur)
+                    try:
+                        r = requests.get("https://api.nimiqx.com/account-blocks/NQ37+47US+CL1J+M0KQ+KEY3+YQ4G+KGHC+VPVF+8L02", timeout=5)
+                        j = r.json()[0]
+                        height = str(j["height"])
+                        diff = str(round(float(j["difficulty"])))
+                        time = j["timestamp"]
+                        timef = datetime.fromtimestamp(int(time)).strftime('%Y-%m-%d %H:%M:%S GMT')
+
+                        msg += "(Height: " + height + ", " + "Diff: " + diff + ", " + timef + ")` :tada:"
+                    except (requests.Timeout, requests.exceptions.ConnectionError):
+                        print("Couldn't connect to Nimiqx API")
                     await client.send_message(channel, msg)
 
             arr = []
