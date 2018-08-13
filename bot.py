@@ -77,7 +77,7 @@ def main():
                         height = str(j["height"])
                         diff = str(round(float(j["difficulty"])))
                         time = j["timestamp"]
-                        timef = datetime.fromtimestamp(int(time)).strftime('%Y-%m-%d %H:%M:%S GMT')
+                        timef = datetime.utcfromtimestamp(int(time)).strftime('%Y-%m-%d %H:%M:%S GMT')
 
                         msg += "(Height: " + height + ", " + "Diff: " + diff + ", " + timef + ")` :tada:"
                     except (requests.Timeout, requests.exceptions.ConnectionError):
