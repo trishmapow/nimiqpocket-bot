@@ -9,7 +9,7 @@ from datetime import datetime
 from tabulate import tabulate
 from bs4 import BeautifulSoup
 
-servers = {"hk": {},"eu": {},"us": {}}
+servers = {"us": {}}
 num_blocks = -1
 pool_fee = -1
 channel = None
@@ -63,7 +63,7 @@ def main():
                 servers[server]["clients"] = json["numClients"]
                 sum_clients += int(json["numClients"])
 
-                if server == "hk":
+                if server == "us":
                     num_blocks_cur = json["minedBlocks"]
                     pool_fee = json["poolFee"]
 
