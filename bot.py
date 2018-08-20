@@ -60,6 +60,7 @@ def main():
                 addr = ''.join(msg[1:])
             else:
                 await client.send_message(message.channel, "```Usage: !setaddr [address]```")
+                return
             set_address(message.author.id,addr)
             await client.send_message(message.channel, "```Set your address to {}```".format(addr))
 
