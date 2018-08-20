@@ -3,6 +3,7 @@ import requests
 import asyncio
 import configparser
 import os
+import sqlite3
 
 from time import sleep, time, strftime
 from datetime import datetime
@@ -23,6 +24,24 @@ def main():
     BOT_TOKEN = conf.get('bot_conf', 'BOT_TOKEN')
     BLOCKS_CHANNEL = conf.get('bot_conf', 'BLOCKS_CHANNEL')
 
+    conn = sqlite3.connect("users.db")
+    c = conn.cursor()
+    c.execute('CREATE TABLE IF NOT EXISTS `w` (`id` VARCHAR(18) PRIMARY KEY, `address` VARCHAR(36))')
+    conn.commit()
+
+    def get_address(id):
+        c.execute('SELECT * FROM `w` WHERE `id`={}'.format(user))
+        res = c.fetchall()
+        if (len(res) == 0):
+            return ""
+        else:
+            return res[0][1]
+
+    def set_address(id,address):
+        c.execute("INSERT OR IGNORE INTO `w` (`id`,`address`) VALUES ('{id}','');".format(id))
+        c.execute("UPDATE `w` SET `address`='{address}' WHERE `id`='{id}';".format(id,address))
+        conn.commit()
+
     @client.event
     async def on_ready():
         print('Logged in as {} <@{}>'.format(client.user.name, client.user.id))
@@ -32,6 +51,36 @@ def main():
     async def on_message(message):
         if message.content.startswith("!pool"):
             await client.send_message(message.channel, "```js\n{}```".format(pool_msg))
+
+        if message.content.startswith("!setaddr"):
+            msg = message.content.split(" ")
+            if len(msg) == 2 and len(msg[1]) == 36:
+                addr = msg[1]
+            elif len(msg) == 10 and len(''.join(msg[1:])) == 36:
+                addr = ''.join(msg[1:])
+            else:
+                await client.send_message(message.channel, "```Usage: !setaddr [address]```")
+            set_address(message.author.id,addr)
+            await client.send_message(message.channel, "```Set your address to {}```".format(addr))
+
+        if message.content.startswith("!me"):
+            addr = get_address(message.author.id)
+            if addr == "":
+                await client.send_message(message.channel, "```Please use !setaddr first.```")
+            else:
+                try:
+                    r = requests.get("https://api.nimiqpocket.com:8080/api/device/{}".format(addr), timeout=5)
+                    j = r.json()
+                except:
+                    await client.send_message(message.channel, "```Couldn't reach API```")
+                    return
+
+                numDevices = j["totalActiveDevices"]
+                sumHr = j["totalActiveDevicesHashrate"]
+                #activeDevices = j["activeDevices"]
+
+                msg = "Active devices: {}\nHashrate: {}".format(numDevices,sumHr)
+                await client.send_message(message.channel, "```{}```".format(msg))
 
     async def background_update():
         global num_blocks
@@ -76,7 +125,7 @@ def main():
                         timef = datetime.utcfromtimestamp(int(time)).strftime('%Y-%m-%d %H:%M:%S GMT')
 
                         msg += "(Height: " + height + ", " + "Diff: " + diff + ", " + timef + ")` :tada:"
-                    except (requests.Timeout, requests.exceptions.ConnectionError):
+                    except:
                         print("Couldn't connect to Nimiqx API")
                     await client.send_message(channel, msg)
 
