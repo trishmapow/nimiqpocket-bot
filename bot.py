@@ -80,8 +80,7 @@ def main():
                         print("Couldn't connect to Nimiqx API")
                     await client.send_message(channel, msg)
 
-            msg = "Hashrate: {}\nClients/users: {}/{}\nBlocks: {}".format(hr,clients,users,num_blocks_cur)
-            pool_msg = "```{}```".format(msg)
+            pool_msg = "Hashrate: {}\nClients/users: {}/{}\nBlocks: {}".format(hr,clients,users,num_blocks_cur)
 
             await asyncio.sleep(60)
 
