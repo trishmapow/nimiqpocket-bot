@@ -30,7 +30,7 @@ def main():
     conn.commit()
 
     def get_address(id):
-        c.execute('SELECT * FROM `w` WHERE `id`={}'.format(user))
+        c.execute('SELECT * FROM `w` WHERE `id`={}'.format(id))
         res = c.fetchall()
         if (len(res) == 0):
             return ""
