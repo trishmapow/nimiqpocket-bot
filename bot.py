@@ -77,10 +77,15 @@ def main():
                     return
 
                 numDevices = j["totalActiveDevices"]
-                sumHr = j["totalActiveDevicesHashrate"]
+
+                hr = int(j["totalActiveDevicesHashrate"])
+                if (hr < 1e6):
+                    hr = str(round(hr/1e3,2))+"kH/s"
+                else:
+                    hr = str(round(hr/1e6,2))+"MH/s"
                 #activeDevices = j["activeDevices"]
 
-                msg = "Active devices: {}\nHashrate: {}".format(numDevices,sumHr)
+                msg = "Active devices: {}\nHashrate: {}".format(numDevices,hr)
                 await client.send_message(message.channel, "```{}```".format(msg))
 
     async def background_update():
