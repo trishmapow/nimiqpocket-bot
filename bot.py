@@ -47,12 +47,12 @@ def main():
 
             try:
                 req = requests.get("https://api.nimiqpocket.com:8080/api/poolstats", timeout=5)
-            except (requests.Timeout, requests.exceptions.ConnectionError):
+                json = req.json()
+            except:
                 print("Couldn't connect to API")
                 await asyncio.sleep(15)
                 break
 
-            json = req.json()
             hr = int(json["totalHashrate"])
             if (hr < 1e6):
                 hr = str(round(hr/1e3,2))+"kH/s"
