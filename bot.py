@@ -38,8 +38,8 @@ def main():
             return res[0][1]
 
     def set_address(id,address):
-        c.execute("INSERT OR IGNORE INTO `w` (`id`,`address`) VALUES ('{id}','');".format(id))
-        c.execute("UPDATE `w` SET `address`='{address}' WHERE `id`='{id}';".format(id,address))
+        c.execute("INSERT OR IGNORE INTO `w` (`id`,`address`) VALUES ('{}','');".format(id))
+        c.execute("UPDATE `w` SET `address`='{}' WHERE `id`='{}';".format(address,id))
         conn.commit()
 
     @client.event
