@@ -9,9 +9,9 @@ from datetime import datetime
 from tabulate import tabulate
 from bs4 import BeautifulSoup
 
-servers = {"us": {}}
+#servers = {"us": {}}
 num_blocks = -1
-pool_fee = -1
+#pool_fee = -1
 channel = None
 pool_msg = ""
 
@@ -45,27 +45,23 @@ def main():
             sum_hr = 0
             sum_clients = 0
 
-            for server in servers:
-                try:
-                    req = requests.get("https://{}.nimiqpocket.com:8444/api/poolstats".format(server), timeout=5)
-                except (requests.Timeout, requests.exceptions.ConnectionError):
-                    print("Couldn't connect to {}".format(server))
-                    await asyncio.sleep(15)
-                    break
+            try:
+                req = requests.get("https://api.nimiqpocket.com:8080/api/poolstats", timeout=5)
+            except (requests.Timeout, requests.exceptions.ConnectionError):
+                print("Couldn't connect to API")
+                await asyncio.sleep(15)
+                break
 
-                json = req.json()
-                hr = int(json["hashRate"])
-                if (hr < 1e6):
-                    servers[server]["hr"] = str(round(hr/1e3,2))+"kH/s"
-                else:
-                    servers[server]["hr"] = str(round(hr/1e6,2))+"MH/s"
-                sum_hr += hr
-                servers[server]["clients"] = json["numClients"]
-                sum_clients += int(json["numClients"])
+            json = req.json()
+            hr = int(json["totalHashrate"])
+            if (hr < 1e6):
+                hr = str(round(hr/1e3,2))+"kH/s"
+            else:
+                hr = str(round(hr/1e6,2))+"MH/s"
+            clients = json["totalClients"]
+            users = json["totalUsers"]
 
-                if server == "us":
-                    num_blocks_cur = json["minedBlocks"]
-                    pool_fee = json["poolFee"]
+            num_blocks_cur = json["totalBlocksMined"]
 
             if num_blocks_cur > num_blocks:
                 num_blocks = num_blocks_cur
@@ -84,16 +80,8 @@ def main():
                         print("Couldn't connect to Nimiqx API")
                     await client.send_message(channel, msg)
 
-            arr = []
-            for server in servers:
-                arr.append([server, servers[server]["hr"], servers[server]["clients"]])
-
-            sum_hr_ft = str(round(float(sum_hr)/1e6, 2))+"MH/s"
-
-            arr.append(["TOTAL", sum_hr_ft, sum_clients])
-            arr.append(["","",""])
-            arr.append(["","Fee "+str(pool_fee)+"%","Blocks: "+str(num_blocks_cur)])
-            pool_msg = tabulate(arr, headers=["Server", "Hashrate", "# miners"])
+            msg = "Hashrate: {}\nClients/users: {}/{}\nBlocks: {}".format(hr,clients,users,num_blocks_cur)
+            pool_msg = "```{}```".format(msg)
 
             await asyncio.sleep(60)
 
