@@ -114,7 +114,7 @@ def main():
             sum_clients = 0
 
             try:
-                req = requests.get("https://api.nimiqpocket.com:8080/api/poolstats", timeout=5)
+                req = requests.get("https://api.nimiqpocket.com:8080/api/poolstats", timeout=10)
                 json = req.json()
             except:
                 print("Couldn't connect to API")
