@@ -91,12 +91,12 @@ def main():
                 for device in activeDevices:
                     hash = format_hr(device["hashrate"])
                     name = device["deviceName"]
-                    table.append(name, hash)
+                    table.append([name, hash])
 
                 numDevices = j["totalActiveDevices"]
                 totalHash = format_hr(j["totalActiveDevicesHashrate"])
 
-                table.append("TOTAL", "{} miners @ {}".format(numDevices,totalHash))
+                table.append(["TOTAL", "{} miners @ {}".format(numDevices,totalHash)])
 
                 msg = tabulate(table, headers=["Name","Hashrate"])
                 await client.send_message(message.channel, "```js\n{}```".format(msg))
