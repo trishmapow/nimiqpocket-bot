@@ -5,7 +5,7 @@ import configparser
 import os
 import sqlite3
 
-from time import sleep, time, strftime
+from time import sleep, time, strftime, localtime, asctime
 from datetime import datetime
 from tabulate import tabulate
 from bs4 import BeautifulSoup
@@ -74,6 +74,7 @@ def main():
                     j = r.json()
                 except:
                     await client.send_message(message.channel, "```Couldn't reach API```")
+                    print("Couldn't reach API @{}".format(asctime(localtime(time()))))
                     return
 
                 numDevices = j["totalActiveDevices"]
@@ -104,7 +105,7 @@ def main():
                 req = requests.get("https://api.nimiqpocket.com:8080/api/poolstats", timeout=5)
                 json = req.json()
             except:
-                print("Couldn't connect to API")
+                print("Couldn't connect to API @{}".format(asctime(localtime(time()))))
                 await asyncio.sleep(15)
                 break
 
@@ -132,7 +133,7 @@ def main():
 
                         msg += "(Height: " + height + ", " + "Diff: " + diff + ", " + timef + ")` :tada:"
                     except:
-                        print("Couldn't connect to Nimiqx API")
+                        print("Couldn't connect to Nimiqx API @{}".format(asctime(localtime(time()))))
                     await client.send_message(channel, msg)
 
             pool_msg = "Hashrate: {}\nClients/users: {}/{}\nBlocks: {}".format(hr,clients,users,num_blocks_cur)
