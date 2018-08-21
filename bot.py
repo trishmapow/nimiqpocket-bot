@@ -42,6 +42,14 @@ def main():
         c.execute("UPDATE `w` SET `address`='{}' WHERE `id`='{}';".format(address,id))
         conn.commit()
 
+    def format_hr(hr):
+        hr = int(hr)
+        if (hr < 1e6):
+            hr = str(round(hr/1e3,2))+"kH/s"
+        else:
+            hr = str(round(hr/1e6,2))+"MH/s"
+        return hr
+
     @client.event
     async def on_ready():
         print('Logged in as {} <@{}>'.format(client.user.name, client.user.id))
@@ -74,20 +82,24 @@ def main():
                     j = r.json()
                 except:
                     await client.send_message(message.channel, "```Couldn't reach API```")
-                    print("Couldn't reach API @{}".format(asctime(localtime(time()))))
+                    print("Couldn't reach API")
                     return
 
+                table = []
+
+                activeDevices = j["activeDevices"]
+                for device in activeDevices:
+                    hash = format_hr(device["hashrate"])
+                    name = device["deviceName"]
+                    table.append(name, hash)
+
                 numDevices = j["totalActiveDevices"]
+                totalHash = format_hr(j["totalActiveDevicesHashrate"])
 
-                hr = int(j["totalActiveDevicesHashrate"])
-                if (hr < 1e6):
-                    hr = str(round(hr/1e3,2))+"kH/s"
-                else:
-                    hr = str(round(hr/1e6,2))+"MH/s"
-                #activeDevices = j["activeDevices"]
+                table.append("TOTAL", "{} miners @ {}".format(numDevices,totalHash))
 
-                msg = "Active devices: {}\nHashrate: {}".format(numDevices,hr)
-                await client.send_message(message.channel, "```{}```".format(msg))
+                msg = tabulate(table, headers=["Name","Hashrate"])
+                await client.send_message(message.channel, "```js\n{}```".format(msg))
 
     async def background_update():
         global num_blocks
@@ -105,7 +117,7 @@ def main():
                 req = requests.get("https://api.nimiqpocket.com:8080/api/poolstats", timeout=5)
                 json = req.json()
             except:
-                print("Couldn't connect to API @{}".format(asctime(localtime(time()))))
+                print("Couldn't connect to API")
                 await asyncio.sleep(15)
                 break
 
@@ -133,7 +145,7 @@ def main():
 
                         msg += "(Height: " + height + ", " + "Diff: " + diff + ", " + timef + ")` :tada:"
                     except:
-                        print("Couldn't connect to Nimiqx API @{}".format(asctime(localtime(time()))))
+                        print("Couldn't connect to Nimiqx API")
                     await client.send_message(channel, msg)
 
             pool_msg = "Hashrate: {}\nClients/users: {}/{}\nBlocks: {}".format(hr,clients,users,num_blocks_cur)
