@@ -136,7 +136,7 @@ def main():
                 if channel is not None:
                     msg = "`We found Nimiqpocket's #{} block! ".format(num_blocks_cur)
                     try:
-                        r = requests.get("https://api.nimiqx.com/account-blocks/NQ37+47US+CL1J+M0KQ+KEY3+YQ4G+KGHC+VPVF+8L02", timeout=5)
+                        r = requests.get("https://api.nimiqx.com/account-blocks/NQ37+47US+CL1J+M0KQ+KEY3+YQ4G+KGHC+VPVF+8L02/?api_key={}".format("50bd2d069fe5624a8e5a74b91dc9f315"), timeout=5)
                         j = r.json()[0]
                         height = str(j["height"])
                         diff = str(round(float(j["difficulty"])))
