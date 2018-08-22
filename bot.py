@@ -116,39 +116,41 @@ def main():
             try:
                 req = requests.get("https://api.nimiqpocket.com:8080/api/poolstats", timeout=10)
                 json = req.json()
+
+                hr = int(json["totalHashrate"])
+                if (hr < 1e6):
+                    hr = str(round(hr/1e3,2))+"kH/s"
+                else:
+                    hr = str(round(hr/1e6,2))+"MH/s"
+                clients = json["totalClients"]
+                users = json["totalUsers"]
+
+                num_blocks_cur = json["totalBlocksMined"]
+
+                if num_blocks_cur > num_blocks:
+                    num_blocks = num_blocks_cur
+                    if channel is not None:
+                        msg = "`We found Nimiqpocket's #{} block! ".format(num_blocks_cur)
+                        try:
+                            r = requests.get("https://api.nimiqx.com/account-blocks/NQ37+47US+CL1J+M0KQ+KEY3+YQ4G+KGHC+VPVF+8L02/?api_key={}"\
+                                .format("50bd2d069fe5624a8e5a74b91dc9f315"), timeout=5)
+                            j = r.json()[0]
+                            height = str(j["height"])
+                            diff = str(round(float(j["difficulty"])))
+                            time = j["timestamp"]
+                            timef = datetime.utcfromtimestamp(int(time)).strftime('%Y-%m-%d %H:%M:%S GMT')
+
+                            msg += "(Height: " + height + ", " + "Diff: " + diff + ", " + timef + ")` :tada:"
+                        except:
+                            print("Couldn't connect to Nimiqx API")
+                        await client.send_message(channel, msg)
             except:
                 print("Couldn't connect to API")
-                await asyncio.sleep(15)
-                break
 
-            hr = int(json["totalHashrate"])
-            if (hr < 1e6):
-                hr = str(round(hr/1e3,2))+"kH/s"
+            if hr:
+                pool_msg = "Hashrate: {}\nClients/users: {}/{}\nBlocks: {}".format(hr,clients,users,num_blocks_cur)
             else:
-                hr = str(round(hr/1e6,2))+"MH/s"
-            clients = json["totalClients"]
-            users = json["totalUsers"]
-
-            num_blocks_cur = json["totalBlocksMined"]
-
-            if num_blocks_cur > num_blocks:
-                num_blocks = num_blocks_cur
-                if channel is not None:
-                    msg = "`We found Nimiqpocket's #{} block! ".format(num_blocks_cur)
-                    try:
-                        r = requests.get("https://api.nimiqx.com/account-blocks/NQ37+47US+CL1J+M0KQ+KEY3+YQ4G+KGHC+VPVF+8L02/?api_key={}".format("50bd2d069fe5624a8e5a74b91dc9f315"), timeout=5)
-                        j = r.json()[0]
-                        height = str(j["height"])
-                        diff = str(round(float(j["difficulty"])))
-                        time = j["timestamp"]
-                        timef = datetime.utcfromtimestamp(int(time)).strftime('%Y-%m-%d %H:%M:%S GMT')
-
-                        msg += "(Height: " + height + ", " + "Diff: " + diff + ", " + timef + ")` :tada:"
-                    except:
-                        print("Couldn't connect to Nimiqx API")
-                    await client.send_message(channel, msg)
-
-            pool_msg = "Hashrate: {}\nClients/users: {}/{}\nBlocks: {}".format(hr,clients,users,num_blocks_cur)
+                pool_msg = "Last API fetch failed."
 
             await asyncio.sleep(60)
 
