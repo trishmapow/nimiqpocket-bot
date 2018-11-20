@@ -4,6 +4,7 @@ import asyncio
 import configparser
 import os
 import sqlite3
+import sys
 
 from time import sleep, time, strftime, localtime, asctime
 from datetime import datetime
@@ -78,7 +79,7 @@ def main():
                 await client.send_message(message.channel, "```Please use !setaddr first.```")
             else:
                 try:
-                    r = requests.get("https://api.nimiqpocket.com:8080/api/device/{}".format(addr), timeout=5)
+                    r = requests.get("https://api.nimiqpocket.com:8080/api/device/active/{}".format(addr), timeout=5)
                     j = r.json()
                 except:
                     await client.send_message(message.channel, "```Couldn't reach API```")
@@ -93,8 +94,8 @@ def main():
                     name = device["deviceName"]
                     table.append([name, hash])
 
-                numDevices = j["totalActiveDevices"]
-                totalHash = format_hr(j["totalActiveDevicesHashrate"])
+                numDevices = len(activeDevices)
+                totalHash = format_hr(j["totalHashrate"])
 
                 table.append(["TOTAL", "{} miners @ {}".format(numDevices,totalHash)])
 
@@ -158,8 +159,4 @@ def main():
     client.run(BOT_TOKEN)
 
 if __name__ == "__main__":
-    while True:
-        try:
-            main()
-        except ConnectionResetError:
-            sleep(10)
+    main()
