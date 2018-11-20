@@ -24,6 +24,7 @@ def main():
 
     BOT_TOKEN = conf.get('bot_conf', 'BOT_TOKEN')
     BLOCKS_CHANNEL = conf.get('bot_conf', 'BLOCKS_CHANNEL')
+    API_KEY = conf.get('bot_conf', 'API_KEY')
 
     conn = sqlite3.connect("users.db")
     c = conn.cursor()
@@ -134,7 +135,7 @@ def main():
                         msg = "`We found Nimiqpocket's #{} block! ".format(num_blocks_cur)
                         try:
                             r = requests.get("https://api.nimiqx.com/account-blocks/NQ37+47US+CL1J+M0KQ+KEY3+YQ4G+KGHC+VPVF+8L02/?api_key={}"\
-                                .format("50bd2d069fe5624a8e5a74b91dc9f315"), timeout=5)
+                                .format(API_KEY), timeout=5)
                             j = r.json()[0]
                             height = str(j["height"])
                             diff = str(round(float(j["difficulty"])))
