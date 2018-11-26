@@ -154,6 +154,8 @@ def main():
             else:
                 pool_msg = "Last API fetch failed."
 
+            await client.change_presence(game=discord.Game(name=hr))
+
             await asyncio.sleep(60)
 
     client.loop.create_task(background_update())
